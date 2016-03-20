@@ -1,0 +1,4 @@
+{
+	//URL de Mongo
+	"mongoURL": "mongodb://localhost:27017/bafa"
+}

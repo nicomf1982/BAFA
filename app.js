@@ -9,7 +9,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var games = require('./routes/games');
 
-var config = require('config');
+var config = require('config'); //modulo de configuracion en ./config/default.JSON
 var mongojs = require('mongojs');
 var mongoURL = config.get('mongoURL');
 var db = mongojs(mongoURL, ['users','games']);

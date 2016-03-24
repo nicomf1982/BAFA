@@ -8,14 +8,17 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var games = require('./routes/games');
-
-var config = require('config'); //modulo de configuracion en ./config/default.JSON
-var mongojs = require('mongojs');
-var mongoURL = config.get('mongoURL');
-var db = mongojs(mongoURL, ['users','games']);
+var register = require('./routes/register');
+var api = require('./routes/api');
 
 var app = express();
+// var db = require('./config.js').db;
 
+// //ponemos la DB en req.db asi esta disponible en cada request
+// app.use(function(req, res, next) {
+//   req.db=db;
+//   next();
+// });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -32,6 +35,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/users', users);
 app.use('/games', games);
+app.use('/register', register);
+app.use('/api', api);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

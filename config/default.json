@@ -1,4 +1,5 @@
 {
 	//URL de Mongo
-	"mongoURL": "mongodb://localhost:27017/bafa"
+	"mongoURL": "mongodb://localhost:27017/bafa",
+	//"db": "mongojs('mongodb://localhost:27017/bafa', ['users','games'])" // no funciona porque no esta el require mongo
 }

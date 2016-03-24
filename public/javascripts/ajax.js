@@ -6,7 +6,7 @@ $("#login").validate({
     $(form).ajaxSubmit({
       success:function(res,status){
         if (res===true){
-          alert('logueo satisfactorio');
+          alert('success login');
         }else{
           alert('bad login');
         }
@@ -15,5 +15,22 @@ $("#login").validate({
     });
   }
 });
+
+$("#register").validate({
+  submitHandler: function(form) {
+    //alert(form);
+    $(form).ajaxSubmit({
+      success:function(res,status){
+        if (res===true){
+          alert('succes register');
+        }else{
+          alert('bad register');
+        }
+      },
+      error: function (res,status,xhr){alert('error, intentelo nuevamente');}
+    });
+  }
+});
+
 
 });

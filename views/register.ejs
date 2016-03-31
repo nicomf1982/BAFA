@@ -1,21 +1,16 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>pagina de registro</title>
-	<script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
-	<script type="text/javascript" src='/javascripts/jquery.validate.js'></script>
-	<script type="text/javascript" src="/javascripts/additional-methods.js"></script>
-	<script type="text/javascript" src="/javascripts/messages_es_AR.js"></script>
-	<script src="http://malsup.github.com/jquery.form.js"></script>
-	<script type="text/javascript" src="/javascripts/ajax.js"></script>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-<body>
-<form id="register" action="/register" method="post" novalidate>
-	<input type="text" name="user" id="user" placeholder="Nombre">
-	<input type="text" name="email" id="email" placeholder="correo electronico">
-	<input type="text" name="pass" id="pass" placeholder="contraseña">
-	<input class="submit" type="submit" value="Enviar">
-</form>
-</body>
-</html>
+		<% include header.ejs %>
+		<div class="container">
+			<h1> Sing up</h1>
+			<form id="registerForm" action="/register" method="post" novalidate>
+				<p><input type="text" name="alias" id="alias" placeholder="Nombre de usuario"> * 3 minimo </p>
+				<p><input type="text" name="email" id="email" placeholder="correo electronico"> * Un email valido</p>
+				<p><input type="password" name="password1" id="password1" placeholder="contraseña"> * Minimo 8 caracteres</p>
+				<p><input type="password" name="password2" id="password2" placeholder="Repetir contraseña"> * Repetir contraseña</p>
+				<input type="checkbox" name="legals" id="legals">
+				Acepto los <a href="/legal">terminos y condiciones</a>
+				<input class="submit" type="submit" value="Enviar">
+			</form>
+			<div id="registerOK" style="display:none;">
+			</div>
+		</div>
+	    <% include footer.ejs %>

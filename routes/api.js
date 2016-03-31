@@ -17,7 +17,16 @@ router.route('/users')
 
 	// Buscar user
 	.get(function(req, res, next){
-		res.send('creo usuario /get dentro de la API');
+		userCtrl.findUser(req.query, function(err, dataQ){
+			if (err){
+				throw err;
+			}
+			if(dataQ.length>0) {
+			res.send('Usuario encontrado');
+		} else { 
+			res.send('Usuario inexsistente'); 
+		}
+		});
 	})
 
 	// Editar User

@@ -1,6 +1,7 @@
 var db = require('../config.js').db;
 
 
+
 exports.createUser = function (data, cb){
 	db.users.insert({
 		username: 	data.username,
@@ -16,8 +17,9 @@ exports.createUser = function (data, cb){
 };
 
 
-exports.findUser = function (user, mail, cb){
-	db.users.find({email: mail, username: user}).toArray(function(err,data){
+exports.findUser = function (data, cb){
+	//console.log (data);
+	db.users.find({username: data.username, email: data.email}).toArray(function(err,data){
 	    if(err){
 	      console.log(err);
 	      data=[];

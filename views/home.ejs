@@ -1,0 +1,25 @@
+		<% include header.ejs %>
+		<div class="container">
+	        <h1><%= title %></h1>
+	        <p>Welcome to <%= title %></p>
+	        <div>
+	        	<form id="loginForm" action="/login" method="post" novalidate>
+	    			<fieldset>
+						<legend>Login BAFA</legend>
+						<input id="loginName" name="name" placeholder="Usuario/Email"  type="text" >
+						<input id="loginPassword" name="password" placeholder="Contraseña" type="password" >
+						<!-- <input class="submit" type="submit" value="Enviar"> -->
+						<button type="submit">ENTRAR</button>
+	    			</fieldset>
+	    		</form>
+	    		<br>
+	        </div>
+	        <a href="/about">About</a>
+	        <a href="/contact">contacto</a>
+	        <form id="inTouch">
+	        	<input id="inTouchEmail" type="text" placeholder="Ingrese su email">
+	        	<input id="inTouchButton" type="button" value="Subscribirme">
+	        </form>
+	    </div>
+	    <% include footer.ejs %>
+

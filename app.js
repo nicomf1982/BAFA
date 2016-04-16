@@ -13,13 +13,18 @@ var register = require('./routes/register');
 var api = require('./routes/api');
 
 var app = express();
-// var db = require('./config.js').db;
+var mongoUrl = require('./config.js').db;
 
-// //ponemos la DB en req.db asi esta disponible en cada request
-// app.use(function(req, res, next) {
-//   req.db=db;
-//   next();
-// });
+// mongoose
+var mongoose = require('mongoose');
+mongoose.connect(mongoUrl);
+
+var db = mongoose.connection;
+
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  console.log("Mongo connection READY!");
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -35,6 +40,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRoutes);
 app.use('/', myAccountRoutes);
+
+
 
 //app.use('/games', games);
 //app.use('/register', register);

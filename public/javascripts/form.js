@@ -1,13 +1,16 @@
-$(document).ready( function() {	// Esta parte del código se ejecutará  cuando la página esté lista.
+$(document).ready( function() {// Esta parte del código se ejecutará  cuando la página esté lista.
+
+  // prevengo el defaul de ahcer click en el boton de Login
+
+  'use strict';
 
   $('#loginBtn').click(function(){
-    $('#loginHide').show();
     event.preventDefault();
     return;
   });
 
   // Metodo para el evento Modal desde Javascrip , boostrap los hace directamente usando los tags de button
-  // $('#loginBtn').click(function(){ 
+  // $('#loginBtn').click(function(){
   //   $('#myModal').modal('show');
   //   event.preventDefault();
   //   return;
@@ -23,7 +26,7 @@ $(document).ready( function() {	// Esta parte del código se ejecutará  cuando 
           return $.trim(value);
         }
       },
-      email:{
+      email: {
         required:true,
         maxlength: 60,
         email:true,
@@ -34,12 +37,12 @@ $(document).ready( function() {	// Esta parte del código se ejecutará  cuando 
       password1: {
         required:true,
         minlength: 7, // en realidad va 8 , lo pongo en 7 para que de error en si se madna por postman
-        lettersonly: false,      
+        lettersonly: false,
       },
-      password2:{
+      password2: {
         equalTo:'#password1'
       },
-      legals:{
+      legals: {
         required:true
       }
     },
@@ -56,7 +59,7 @@ $(document).ready( function() {	// Esta parte del código se ejecutará  cuando 
       });
     event.preventDefault();
     return;
-    }  
+    }
   });
 
 

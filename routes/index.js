@@ -1,9 +1,10 @@
 var express = require('express');
 var router = express.Router();
-var ctrlIndex = require('../controllers/index');
+var ctrlIndex = require('../controllers/index')();
+var registerConfirmation = require('../config.js').REGISTER_CONFIRMATION;
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
 
 	console.log(req.originalUrl);
 
@@ -15,15 +16,19 @@ router.get('/', function(req, res, next) {
 
 
 /* GET login. */
-router.get('/login', function(req, res, next) {
+router.get('/login', function (req, res, next) {
 
 	 console.log(req.originalUrl);
+	 // ctrlIndex.login ({}, function (data){
+	 // 	res.render('login', data.title);
+	 // });
+	res.redirect ('/');
 
 });
 
 
 /* POST login. */
-router.post('/login', function(req, res, next) {
+router.post('/login', function (req, res, next) {
 
   console.log(req.body);
   
@@ -35,7 +40,7 @@ router.post('/login', function(req, res, next) {
 
 
 /* GET Registro. */
-router.get ('/register', function(req, res, next){
+router.get ('/register', function (req, res, next){
 
 	console.log(req.originalUrl);
 
@@ -47,11 +52,14 @@ router.get ('/register', function(req, res, next){
 
 
 /* POST Registro. */
-router.post ('/register', function(req, res, next){
+router.post ('/register', function (req, res, next){
 
 	console.log(req.originalUrl);
 	//validacion de datos en el servidor
-	ctrlIndex.registerNewUser (req.body, function(err, data){
+	var baseURL= req.protocol + '://' + req.get('host');
+	var params={ bodyPost: req.body, baseURL: baseURL};
+
+	ctrlIndex.registerNewUser (params, function(err, data){
 			res.send(data);	
 	});
 
@@ -59,11 +67,11 @@ router.post ('/register', function(req, res, next){
 
 
 /* GET About. */
-router.get ('/about', function(req, res, next){
+router.get ('/about', function (req, res, next){
 
 	console.log(req.originalUrl);
 
-	ctrlIndex.about ({}, function(data){
+	ctrlIndex.about ({}, function (data){
 			res.render('about', data.title);
 	});
 
@@ -71,7 +79,7 @@ router.get ('/about', function(req, res, next){
 
 
 /* GET Contacto. */
-router.get ('/contact', function(req, res, next){
+router.get ('/contact', function (req, res, next){
 
 	console.log(req.originalUrl);
 
@@ -83,7 +91,7 @@ router.get ('/contact', function(req, res, next){
 
 
 /* POST Contacto. */
-router.post ('/contact', function(req, res, next){
+router.post ('/contact', function (req, res, next){
 
 	console.log(req.originalUrl);
 	res.send(true);
@@ -91,12 +99,27 @@ router.post ('/contact', function(req, res, next){
 });
 
 /* GET Forgot. */
-router.get ('/forgot', function(req, res, next){
+router.get ('/forgot', function (req, res, next){
 
 	ctrlIndex.forgot({}, function(data){
 		res.render('forgot', data.title);
 	});
 
+});
+
+/* GET Activation. */
+router.get ('/activation', function (req, res, next) {
+		if (registerConfirmation){
+			var baseURL= req.protocol + '://' + req.get('host');
+			var params={ bodyGet: req.query, baseURL:baseURL};
+			ctrlIndex.checkActivationCode (params,function (data){
+				if (data) {
+				res.redirect('/');
+				}else { res.send ('no hay coincidencia');}
+			});
+	}else {
+		res.redirect('/');
+	}
 });
 
 

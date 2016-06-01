@@ -42,6 +42,6 @@ module.exports = {
 		contactEmail: "MVP <mvp@example.com>"
 	},
 	REGISTER_CONFIRMATION: true,
-	EMAIL_DIRECT: false, // Easier to set up but has higher chances of ending up in the Spam folder
-	EMAIL_SMTP: true, // ussing OXAuth2 on gmail, Mailgun , Mandrill
+	EMAIL_DIRECT: true, // Easier to set up but has higher chances of ending up in the Spam folder
+	EMAIL_SMTP: false, // ussing OXAuth2 on gmail, Mailgun , Mandrill
 };

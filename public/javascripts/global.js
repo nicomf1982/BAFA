@@ -9,12 +9,28 @@ $(document).ready( function() {// Esta parte del código se ejecutará  cuando l
     return;
   });
 
+  $('[data-toggle="tooltip"]').tooltip();  
+
   // Metodo para el evento Modal desde Javascrip , boostrap los hace directamente usando los tags de button
   // $('#loginBtn').click(function(){
   //   $('#myModal').modal('show');
   //   event.preventDefault();
   //   return;
   // });
+
+  $('#signinButton').click (function(){
+    $.post('/login',$("#loginForm").serialize(), function (data){
+      if (data.status) {
+        $('#loginBad').hide();
+        $('#loginOK').html(data.message).show().focus();
+        setTimeout(function(){ window.location = '/'; }, 1000);
+      }else {
+        $('#loginBad').html(data.message).show().focus();
+      }
+    });
+    event.preventDefault();
+    return;
+  });  
 
   $("#registerForm").validate({
       rules: {
@@ -49,11 +65,13 @@ $(document).ready( function() {// Esta parte del código se ejecutará  cuando l
     submitHandler: function(form) {
       $.post('/register',$("#registerForm").serialize(), function (data){
         if(data){
-          if (data.status) {
-            $('#registerForm').hide();
-            $('#registerOK').html(data.msg[0]).show().focus();
+          if (!data.status) {
+          $('#registerBad').html(data.msg[0]).show().focus();
           }else {
-          alert(data.msg);
+            $('#registerBad').html(data.msg[0]).hide().focus();
+            $('#registerOK').html(data.msg[0]).show().focus();
+            $('#registerForm').hide();
+            setTimeout(function(){ window.location = '/'; }, 1000);
           }
         }
       });
@@ -61,6 +79,4 @@ $(document).ready( function() {// Esta parte del código se ejecutará  cuando l
     return;
     }
   });
-
-
 });

@@ -1,16 +1,33 @@
 		<% include header.ejs %>
 		<div class="container">
-			<h1> Sing up</h1>
-			<form id="registerForm" action="/register" method="post" novalidate>
-				<p><input type="text" name="alias" id="alias" placeholder="Nombre de usuario"> * 3 minimo </p>
-				<p><input type="text" name="email" id="email" placeholder="correo electronico"> * Un email valido</p>
-				<p><input type="password" name="password1" id="password1" placeholder="contraseña"> * Minimo 8 caracteres</p>
-				<p><input type="password" name="password2" id="password2" placeholder="Repetir contraseña"> * Repetir contraseña</p>
-				<input type="checkbox" name="legals" id="legals">
-				Acepto los <a href="/legal">terminos y condiciones</a>
-				<input class="submit" type="submit" value="Enviar">
+			<h1> Sign up</h1>
+			<form id="registerForm" action="/register" method="post" novalidate role="form">
+				<div class="form-group">
+					<label for="email">Username:</label>				
+					<p><input type="text" name="alias" id="alias"  class="form-control" data-toggle="tooltip" data-placement="right" title="3 characters al least!"> </p>
+				</div>
+				<div class="form-group">
+					<label for="email">Email:</label>
+					<p><input type="text" name="email" id="email"  class="form-control" data-toggle="tooltip" data-placement="right" title="A valid Email"></p>
+				</div>
+				<div class="form-group">
+					<label for="email">Password:</label>
+					<p><input type="password" name="password1" id="password1"  class="form-control t" data-toggle="tooltip" data-placement="right" title="8 characters or more"></p>
+				</div>
+				<div class="form-group">
+					<label for="email">Password:</label>
+					<p><input type="password" name="password2" id="password2"  class="form-control" data-toggle="tooltip" data-placement="right" title="Repeat Password"></p>
+				</div>
+				<div class="checkbox">
+					<label><input type="checkbox" name="legals" id="legals">
+					I agree <a href="/legal">terms and condition</a></label>	
+					<input class="btn btn-default submit" type="submit" value="Submit">
+				</div>				
 			</form>
-			<div id="registerOK" style="display:none;">
+			</br>
+			<div id="registerOK" style="display:none;" class="alert alert-success">
+			</div>
+			<div id="registerBad" style="display:none;" class="alert alert-danger">
 			</div>
 		</div>
 	    <% include footer.ejs %>

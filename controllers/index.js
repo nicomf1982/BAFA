@@ -93,11 +93,13 @@ function Home() {
 					}
 					if(data){
 						if (data.displayName === newUser.alias){
-							cmd.msg.push('Nombre de usuario ya existente');
+							cmd.msg.push('Username already exist');
+							cmd.status = false;
 							cb(null, cmd);
 						}
 						else if (data.email === newUser.email){ 
-							cmd.msg.push('Email ya registrado');
+							cmd.msg.push('Email already exist');
+							cmd.status = false;
 							cb(null, cmd);
 						}
 					}else{

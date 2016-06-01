@@ -4,23 +4,23 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var userModel  = require ('./model/users.js')();
+var flash    = require('connect-flash');
 
 var indexRoutes = require('./routes/index');
-var myAccountRoutes = require('./routes/myaccount');
 
-var games = require('./routes/games');
-var register = require('./routes/register');
-var api = require('./routes/api');
-
+var session = require('express-session');
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
 var app = express();
-var mongoUrl = require('./config.js').db;
+
 
 // mongoose
 var mongoose = require('mongoose');
+var mongoUrl = require('./config.js').db;
 mongoose.connect(mongoUrl);
 
 var db = mongoose.connection;
-
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
   console.log("Mongo connection READY!");
@@ -38,14 +38,31 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Express-Sessions 
+app.use(session({
+    secret: 'keyboard cat',
+    resave: true,
+    saveUninitialized: true,
+    cookie: { 
+      maxAge: 1000*60*60*24*7}, // a week
+}));
+
+// Passport
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+userModel.passportStrategies(passport);
+
+// settings default
+app.use  (function (req, res, next){
+  
+  console.log (req.get('host'));
+  req.app.locals.loggedUser = req.user;
+  next();
+});
+
 app.use('/', indexRoutes);
-app.use('/', myAccountRoutes);
 
-
-
-//app.use('/games', games);
-//app.use('/register', register);
-//app.use('/api', api);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

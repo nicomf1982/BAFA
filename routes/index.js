@@ -2,14 +2,17 @@ var express = require('express');
 var router = express.Router();
 var ctrlIndex = require('../controllers/index')();
 var registerConfirmation = require('../config.js').REGISTER_CONFIRMATION;
+var passport = require('passport');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
 
 	console.log(req.originalUrl);
 
-	ctrlIndex.home({}, function(data){
-		  res.render('home', data.title);
+	ctrlIndex.home({}, function(cmd){
+			cmd.loginError =  req.flash("error");
+			console.log(cmd);	
+		  res.render('home', cmd);
 	});
 
 });
@@ -18,10 +21,8 @@ router.get('/', function (req, res, next) {
 /* GET login. */
 router.get('/login', function (req, res, next) {
 
-	 console.log(req.originalUrl);
-	 // ctrlIndex.login ({}, function (data){
-	 // 	res.render('login', data.title);
-	 // });
+	console.log(req.originalUrl);
+	//console.log('esto es el user'+req.user);
 	res.redirect ('/');
 
 });
@@ -29,15 +30,25 @@ router.get('/login', function (req, res, next) {
 
 /* POST login. */
 router.post('/login', function (req, res, next) {
-
-  console.log(req.body);
-  
-  if(req.body.name==='nicolas'){ res.send(true);}
-  else{
-  res.send (false);}
-
+	params = {
+		email:req.body.email, 
+		password:req.body.password
+	};
+	passport.authenticate('local', function(err, user, info) {
+	    if (err) { return next(err); }
+	    if (!user) { return res.json({status:false, message: 'Wrong username or password'}); }
+	    req.logIn(user, function(err) {
+	      if (err) { return next(err); }
+	      return res.json({status:true, message: 'Login Succes!'});
+	    });
+	  })(req, res, next);
 });
 
+/* GET Logout. */
+router.get ('/logout', function (req, res, next) {
+	req.logout();
+	res.redirect('/');
+});
 
 /* GET Registro. */
 router.get ('/register', function (req, res, next){

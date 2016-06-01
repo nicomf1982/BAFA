@@ -14,8 +14,13 @@
 				<!-- Collect the nav links, forms, and other content for toggling -->
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 					<ul class="nav navbar-nav navbar-right">
-						<a href="/register"><button id="registerBtn" type="button" class="btn btn-default navbar-btn">Sign up</button></a>
-						<a href="/login"><button id="loginBtn" type="button" class="btn btn-default navbar-btn" data-toggle="modal" data-target="#myModal">Log in</button></a>
+					<%if (loggedUser) {%>
+						<p class="navbar-text" id="displayUsername">Hello <a href="/profile"> <%=loggedUser.displayName%></a></p>
+						<a href="/logout"><button id="logoutBtn" type="button" class="btn btn-default navbar-btn">Logout</button></a>
+						<%} else {%>
+						<a href="/register"><button id="registerBtn" type="button" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-user"></span>  Sign Up</button></a>
+						<a href="/login"><button id="loginBtn" type="button" class="btn btn-default navbar-btn" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-log-in"></span>  Login</button></a>
+						<%}%>
 					</ul>
 				</div><!-- /.navbar-collapse -->
 			</div><!-- /.container-fluid -->
@@ -30,20 +35,24 @@
 			        <h4 class="modal-title text-center" id="myModalLabel">Please Log in</h4>
 			      </div>
 			      <div class="modal-body">
-							<form class="form-signin">
+							<form id="loginForm" class="form-signin">
 								<label for="inputEmail" class="sr-only">Email address</label>
-								<input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+								<input type="email" name="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
 								<label for="inputPassword" class="sr-only">Password</label>
-								<input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+								<input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required>
 								<div class="checkbox">
 									<label>
 									<input type="checkbox" value="remember-me"> Remember me · 
 									<a href="/forgot">Forgot your password?</a>
 									</label>
 								</div>
-								<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+								<button id="signinButton" class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
 							</form>
 			      	</div>
+			<div id="loginOK" style="display:none;" class="alert alert-success text-center">
+			</div>
+			<div id="loginBad" style="display:none;" class="alert alert-danger text-center">
+			</div>		      	
 			      <div class="modal-footer">
 			      		<h4 class="text-center modal-footer-style">Don't have an account? <a href="/register"> Sign up » </a></h4>
 			      </div>

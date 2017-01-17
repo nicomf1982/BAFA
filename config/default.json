@@ -1,5 +1,28 @@
 {
-	//URL de Mongo
-	"mongoURL": "mongodb://localhost:27017/bafa",
-	//"db": "mongojs('mongodb://localhost:27017/bafa', ['users','games'])" // no funciona porque no esta el require mongo
+	"db":{
+		"host" : "mongodb://localhost:27017/bafa",
+		"collections":[
+			"users",
+			"games",
+			"posts"
+		]
+	},
+	"crypto":{
+		"key": "USE.YOUR.OWN"
+	},
+	"session":{
+		"secret": "keyboard cat",
+    "resave": true,
+	  "saveUninitialized": true,
+  	"cookie": {
+    	"maxAge":36000000
+		}
+	},
+	"options":{
+		"REGISTER_CONFIRMATION": false,
+		"EMAIL_DIRECT": true,
+		"EMAIL_SMTP": false
+	}
 }
+
+/*1000*60*60*24*7*/

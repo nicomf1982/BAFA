@@ -9,7 +9,7 @@ $(document).ready( function() {// Esta parte del código se ejecutará  cuando l
     return;
   });
 
-  $('[data-toggle="tooltip"]').tooltip();  
+  $('[data-toggle="tooltip"]').tooltip();
 
   // Metodo para el evento Modal desde Javascrip , boostrap los hace directamente usando los tags de button
   // $('#loginBtn').click(function(){
@@ -30,11 +30,11 @@ $(document).ready( function() {// Esta parte del código se ejecutará  cuando l
     });
     event.preventDefault();
     return;
-  });  
+  });
 
   $("#registerForm").validate({
       rules: {
-      alias:{
+      username:{
         required:true,
         minlength: 3,
         maxlength: 40,
@@ -56,7 +56,8 @@ $(document).ready( function() {// Esta parte del código se ejecutará  cuando l
         lettersonly: false,
       },
       password2: {
-        equalTo:'#password1'
+        equalTo:'#password1',
+        required:true
       },
       legals: {
         required:true
@@ -65,13 +66,19 @@ $(document).ready( function() {// Esta parte del código se ejecutará  cuando l
     submitHandler: function(form) {
       $.post('/register',$("#registerForm").serialize(), function (data){
         if(data){
-          if (!data.status) {
-          $('#registerBad').html(data.msg[0]).show().focus();
+          console.log(data);
+          if (data.message.length) {
+            var errorList = '<ul>'
+            data.message.forEach (function (error) {
+              errorList += '<li>'+error+'</li>';
+            })
+            errorList += '</ul>';
+          $('#registerBad').html(errorList).show().focus();
           }else {
-            $('#registerBad').html(data.msg[0]).hide().focus();
-            $('#registerOK').html(data.msg[0]).show().focus();
+            $('#registerBad').hide().focus();
+            $('#registerOK').html((data.username.toUpperCase()) + ' ! Your account has been successfully created, please LOGIN').show().focus();
             $('#registerForm').hide();
-            setTimeout(function(){ window.location = '/'; }, 1000);
+            setTimeout(function(){ window.location = '/'; }, 2000);
           }
         }
       });

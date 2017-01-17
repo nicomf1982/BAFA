@@ -9,13 +9,17 @@ body {
   /* Margin bottom by footer height */
   margin-bottom: 60px;
   padding-top: 20px;
-  height: 800px;
+  height: 1000px;
 }
 
 a {
   color: #00B7FF;
 }
 
+/* Error messages*/
+.error {
+  color: red;
+}
 .navbar {
   margin-bottom: 20px;
 }
@@ -77,8 +81,8 @@ a {
 
 /* Tooltip */
   .form-control + .tooltip > .tooltip-inner {
-      background-color: #E0E0E0; 
-      color: #264C7C; 
+      background-color: #E0E0E0;
+      color: #264C7C;
       padding: 5px;
       font-size: 16px;
   }
@@ -294,7 +298,7 @@ a {
   border: 0;
   padding: 12px 25px 13px 25px;
   font-weight: bold;
-  
+
 }
 
 @media (max-width: 679px) {

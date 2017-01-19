@@ -20,17 +20,38 @@ $(document).ready( function() {// Esta parte del código se ejecutará  cuando l
 
   $('#signinButton').click (function(){
     $.post('/login',$("#loginForm").serialize(), function (data){
-      if (data.status) {
+      console.log(data);
+      if (data.success) {
+        console.log(data);
         $('#loginBad').hide();
         $('#loginOK').html(data.message).show().focus();
-        setTimeout(function(){ window.location = '/'; }, 1000);
+        setTimeout(function(){ window.location = data.redirect; }, 2000);
       }else {
         $('#loginBad').html(data.message).show().focus();
+        // console.log(data);
       }
     });
     event.preventDefault();
     return;
   });
+
+
+  // $('#signinButton').click (function(){
+  //   $.post('/login',$("#loginForm").serialize(), function (data){
+  //     console.log(data);
+  //     if (data.success) {
+  //       // console.log(data);
+  //       $('#loginBad').hide();
+  //       $('#loginOK').html('LOGGED').show().focus();
+  //       setTimeout(function(){ window.location = '/'; }, 2000);
+  //     }else {
+  //       $('#loginBad').html('BAD LOGGIN').show().focus();
+  //       // console.log(data);
+  //     }
+  //   });
+  //   event.preventDefault();
+  //   return;
+  // });
 
   $("#registerForm").validate({
       rules: {

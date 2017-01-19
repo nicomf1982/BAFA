@@ -8,9 +8,10 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const http = require ('http');
 const session = require('express-session');
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-const flash = require('connect-flash');
+// const passport = require('passport');
+// const flash = require('connect-flash');
+
+// const LocalStrategy = require('passport-local').Strategy;
 // const RememberMeStrategy = require('passport-remember-me')
 // const RememberMeStrategy = require('../..').Strategy;
 // var userModel  = require ('./model/users.js')();
@@ -32,9 +33,6 @@ function app(config){
       return self.getApp()
     })
     .then (() => {
-      return self.passport()
-    })
-    .then (() => {
       return self.models()
     })
     .then (() => {
@@ -42,6 +40,9 @@ function app(config){
     })
     .then (() => {
       return self.controllers()
+    })
+    .then (() => {
+      return self.account()
     })
     .then (() => {
       return self.routes()
@@ -91,29 +92,7 @@ app.prototype.getApp = function () {
     self.main.app.use(cookieParser());
     self.main.app.use(express.static(path.join(__dirname, 'public')));
     self.main.app.use(session(self.main.config.get('session')));
-    self.main.app.use(flash());
-
-    // settings default
-    self.main.app.use  (function (req, res, next){ // ??????
-      console.log (req.get('host'));
-      req.app.locals.loggedUser = req.user;
-      next();
-    });
-
-    resolve();
-  });
-}
-
-app.prototype.passport = function () {
-  debug('Passport...')
-  const self = this;
-  // const Account = require('./model/')
-  return new Promise(function(resolve, reject) {
-    // self.main.app.use(passport.initialize());
-    // self.main.app.use(passport.session());
-    //
-    // // app.use(passport.authenticate('remember-me'));
-    // // userModel.passportStrategies(passport);
+    // self.main.app.use(flash());
 
     resolve();
   });
@@ -125,7 +104,6 @@ app.prototype.models = function () {
 
   return new Promise(function(resolve, reject) {
     self.main.model = require('./model')(self.main);
-    // console.log('MODEL: ',self.main.model);
     resolve({ model: self.main.model });
   });
 }
@@ -136,8 +114,7 @@ app.prototype.libs = function (){
 
   return new Promise(function(resolve, reject) {
     self.main.libs = {}
-    self.main.libs = require('./lib')(self.main); // Hacer el index de libs
-    // console.log('LIBS: ', self.main.libs);
+    self.main.libs = require('./lib')(self.main);
     resolve({ libs: self.main. libs });
   });
 }
@@ -148,8 +125,24 @@ app.prototype.controllers = function () {
 
   return new Promise(function(resolve, reject) {
     self.main.controllers = require('./controllers')(self.main);
-    // console.log('CONTROLLERS: ',self.main.controllers);
     resolve({ controllers: self.main.controllers });
+  });
+}
+
+app.prototype.account = function () {
+  debug('Passport...')
+  const self = this;
+  return new Promise(function(resolve, reject) {
+    self.main.passport = require('passport');
+    self.main.account = require('./lib/account')
+    self.main.app.use(self.main.passport.initialize());
+    self.main.app.use(self.main.passport.session());
+    self.main.account.Account(self.main)
+    self.main.app.use  ((req, res, next) => {
+      req.app.locals.loggedUser = req.user;
+      next();
+    });
+    resolve();
   });
 }
 

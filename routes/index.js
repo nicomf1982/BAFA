@@ -1,16 +1,22 @@
 'use strict';
+// const passport = require('passport');
+// const LocalStrategy = require('passport-local').Strategy;
+// const ensureLoggedIn = require ('connect-ensure-login').ensureLoggedIn()
 
 function Router (main){
   const app = main.app;
   const controllers = main.controllers;
+  const ensureLoged = main.account.ensureLogged;
   const registerConfirmation = main.config.get ('options.REGISTER_CONFIRMATION');
-
   return function (req, res, next) {
 
     /* GET home page. */
     app.get('/', (req, res, next) => {
-      controllers.home().then((cmd) => {
-        res.render('home', cmd)
+      const cmd = {
+        title: 'MVC',
+      };
+      controllers.home().then(() => {
+        res.render('home', {title:cmd.title})
       })
     });
 
@@ -30,13 +36,32 @@ function Router (main){
 
     /* POST login. */
     app.post('/login', (req, res, next) => {
-      const loginData = {
-        email:req.body.email,
-        password:req.body.password
-      }
-      controller.login.login_post(loginData).then(() => {
+        main.passport.authenticate('local', (err, user, info) => {
+          if (err) return next (err);
+          if (!user){
+            return res.send ({
+              success: false,
+              message: 'authentication failed',
+              redirect: req.session.returnTo || '/' })
+          }
+          req.login (user, err => {
+            if(err){
+              return next (err)
+            }
+            return res.send({
+              success:true,
+              message: 'authentication succeeded',
+              redirect: req.session.returnTo || '/'})
+          })
+        })(req, res, next);
+      });
 
-      })
+    /* GET Profile. */
+    app.get ('/profile', ensureLoged('/login'), (req, res, next) => {
+      const cmd = {
+        title: 'PROFILE',
+      };
+      res.render('profile', {title: cmd.title });
     })
 
     /* GET Forgot. */
@@ -87,7 +112,7 @@ function Router (main){
 
     /* GET Logout. */
     app.get ('/logout', (req, res, next) => {
-      // req.logout(); // Viene de passport
+      req.logout(); // Viene de passport
       res.redirect('/');
     })
 

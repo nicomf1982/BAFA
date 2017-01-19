@@ -8,14 +8,14 @@
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-					<a class="navbar-brand" href="/">Brand</a> 
+					<a class="navbar-brand" href="/">Brand</a>
 				</div>
 
 				<!-- Collect the nav links, forms, and other content for toggling -->
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 					<ul class="nav navbar-nav navbar-right">
 					<%if (loggedUser) {%>
-						<p class="navbar-text" id="displayUsername">Hello <a href="/profile"> <%=loggedUser.displayName%></a></p>
+						<p class="navbar-text" id="displayUsername">Hello <a href="/profile"> <%=loggedUser.username%></a></p>
 						<a href="/logout"><button id="logoutBtn" type="button" class="btn btn-default navbar-btn">Logout</button></a>
 						<%} else {%>
 						<a href="/register"><button id="registerBtn" type="button" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-user"></span>  Sign Up</button></a>
@@ -35,14 +35,14 @@
 			        <h4 class="modal-title text-center" id="myModalLabel">Please Log in</h4>
 			      </div>
 			      <div class="modal-body">
-							<form id="loginForm" class="form-signin">
+							<form id="loginForm" class="form-signin" >
 								<label for="inputEmail" class="sr-only">Email address</label>
-								<input type="email" name="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+								<input type="text" name="email" id="inputEmail" value="admin@admin.com" class="form-control" placeholder="Email address" required autofocus>
 								<label for="inputPassword" class="sr-only">Password</label>
-								<input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required>
+								<input type="password" name="password" value="11111111" id="inputPassword" class="form-control" placeholder="Password" required>
 								<div class="checkbox">
 									<label>
-									<input type="checkbox" value="remember-me"> Remember me · 
+									<input type="checkbox" value="remember-me"> Remember me ·
 									<a href="/forgot">Forgot your password?</a>
 									</label>
 								</div>
@@ -52,7 +52,7 @@
 			<div id="loginOK" style="display:none;" class="alert alert-success text-center">
 			</div>
 			<div id="loginBad" style="display:none;" class="alert alert-danger text-center">
-			</div>		      	
+			</div>
 			      <div class="modal-footer">
 			      		<h4 class="text-center modal-footer-style">Don't have an account? <a href="/register"> Sign up » </a></h4>
 			      </div>

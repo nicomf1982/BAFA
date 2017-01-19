@@ -1,0 +1,15 @@
+		<% include header.ejs %>
+    <div class="container">
+          <h1>PROFILE</h1>
+          <p>Welcome</p>
+          <div>
+          <%if (loggedUser) {%>
+          tu nombres es: <%=loggedUser.displayName%> </br>
+          tu email es: <%=loggedUser.email%> </br>
+          creaste el usuario el: <%=loggedUser.creationDate%>
+          <%}%>
+          </div>
+
+
+      </div>
+    <% include footer.ejs %>

@@ -1,7 +1,7 @@
 'use strict';
 
 function Login (main) {
-  const passport = main.passport;
+  // const passport = main.passport;
   return {
 
     login_get: function login_get () {
@@ -11,19 +11,12 @@ function Login (main) {
     },
 
     login_post: function login_post (loginData) {
-
-      // 	passport.authenticate('local', function(err, user, info) {
-      // 	    if (err) { return next(err); }
-      // 	    if (!user) { return res.json({status:false, message: 'Wrong username or password'}); }
-      // 	    req.logIn(user, function(err) {
-      // 	      if (err) { return next(err); }
-      // 	      return res.json({status:true, message: 'Login Succes!'});
-      // 	    });
-      // 	  })(req, res, next);
+      return new Promise(function(resolve, reject) {
+          resolve()
+      });
     }
 
   };
-
 }
 
 module.exports = Login;

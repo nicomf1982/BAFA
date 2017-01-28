@@ -1,186 +1,232 @@
 'use strict'
 
-function user (main){
+const gravatar = require('gravatar');
+
+function User(main) {
   const model = main.model;
   const libs = main.libs;
+  const email = main.libs.email;
+  const REGISTER_CONFIRMATION = main.config.get('options.REGISTER_CONFIRMATION');
 
   return {
 
-    registerNewUser : function(registerData) {
-      return new Promise(function(resolve, reject) {
-
-        let newUser = {
-          username: registerData.bodyPost.username,
-          email: registerData.bodyPost.email,
-          password1: registerData.bodyPost.password1,
-          password2:registerData.bodyPost.password2,
-          legals: true,
-          error: [],
-        };
-
-        libs.userValidator(newUser)
-          .then((validatedUser) => {
-            if(!validatedUser.error.length){ // Si no hubo errores en la validacion
-              model.user.find({$or: [{username: validatedUser.username}, {email: validatedUser.email}]})
-                .then((docs) => {
-                  if (docs.length) { // Si algun dato ya esta en la DB
-                    docs.forEach((user) => {
-                      if (user.username === validatedUser.username){
-                        validatedUser.error.push('Username already exist');
-                      }
-                      if (user.email === validatedUser.email){
-                        validatedUser.error.push('Email already exist');
-                      }
-                    })
-                    reject(validatedUser.error); // mando las coincidencias
-                  }else {
-                  model.user.createLocal(validatedUser) // si no hay errores guardo el nuevo usuario
-                    .then ((storedUser) => {
-                      resolve(storedUser.username);
-                    })
-                  }
-                })
-              }else{
-                reject (validatedUser.error);
-              }
-          })
-          .catch ((e) => {
-            reject(e);
-          })
+    loginUser: (req, res, next) => {
+      main.passport.authenticate('local', (err, user, info) => {
+        if (err) return next(err);
+        if (!user) {
+          return res.send({
+            success: false,
+            message: 'authentication failed',
+            redirect: req.session.returnTo || '/' });
+        }
+        if (REGISTER_CONFIRMATION) {
+          if (!user.enable) {
+            return res.send({
+              success: false,
+              message: 'Please confirm your account first!, check your email',
+              redirect: req.session.returnTo || '/',
+            });
+          }
+        }
+        req.login(user, err => {
+          if (err) {
+            return next(err);
+          }
+          return res.status(200).send({
+            success: true,
+            message: 'authentication succeeded',
+            redirect: req.session.returnTo || '/' });
         });
+      })(req, res, next);
+    },
+
+    listUsers: (req, res, next) => {
+      const cmd = {
+        title: 'USER LIST',
+      };
+      model.user.find({})
+      .then((users) => {
+        console.log(users);
+        return res.status(200).render('userlist', { users, title: cmd.title });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    },
+
+    showUser: (req, res, next) => {
+      const username = req.params.username;
+      const cmd = {
+        title: 'USER ACTIVITY',
+      };
+      model.user.findOne({ username })
+        .then((user) => {
+          if (!user) {
+            const err = new Error();
+            err.status = 404;
+            throw err;
+          }
+          return res.status(200).render('userPublic', { user, title: cmd.title });
+        })
+        .catch((err) => {
+          if (err.status === 404) {
+            return res.status(404).render('userNotFound', { title: 'USER NOT FOUND' });
+          }
+          return next(err);
+        });
+    },
+
+    showUserProfile: (req, res, next) => {
+      const cmd = {
+        title: 'PROFILE',
+      };
+      return res.status(200).render('profile', { title: cmd.title });
+    },
+
+    createUser: (req, res, next) => {
+      const newUser = {
+        firstname: undefined,
+        lastname: undefined,
+        gender: undefined,
+        birth: undefined,
+        username: req.body.username,
+        email: req.body.email,
+        password1: req.body.password1,
+        password2: req.body.password2,
+        legals: true,
+        defaultAvatar: undefined,
+        customAvatar: undefined,
+        about: undefined,
+        error: [],
+      };
+      libs.userValidator(newUser)
+        .then((validatedUser) => {
+          validatedUser.defaultAvatar = `http:${gravatar.url(validatedUser.email, { s: '200', f: 'y', d: 'retro' })}`;
+          if (!validatedUser.error.length) { // No validation errors.
+            model.user.find({ $or: [ // Need to change for findOne on db
+              { username: validatedUser.username },
+              { email: validatedUser.email },
+            ] })
+              .then((docs) => {
+                if (docs.length) { // Check username & email already exist
+                  docs.forEach((user) => {
+                    if (user.username === validatedUser.username) {
+                      validatedUser.error.push('Username already exist');
+                    }
+                    if (user.email === validatedUser.email) {
+                      validatedUser.error.push('Email already exist');
+                    }
+                  });
+                  return res.send({ message: validatedUser.error }); // mando las coincidencias
+                } else {
+                  model.user.createLocal(validatedUser) // No error, saves new user
+                  .then((storedUser) => {
+                    const emailOptions = {
+                      // baseURL: req.protocol + '://' + req.get('host'),
+                      username: storedUser.username,
+                      email: storedUser.email, // list of receivers
+                      token: storedUser.activationToken,
+                    };
+                    email.greetings(emailOptions, (error, info) => { // Send gretting email
+                      if (error) {
+                        return console.log(error);
+                      }
+                      // console.log('Message sent: ' + info.response);
+                      return res.send({ username: storedUser.username, message: [] });
+                    });
+                  });
+                }
+              });
+          } else {
+            return res.send({ message: validatedUser.error });
+          }
+        })
+        .catch((err) => {
+          err.status = 500;
+          return next(err);
+        });
+    },
+
+    deleteUser: (req, res, next) => {
+      const id = req.session.passport.user;
+      const password = req.body.password;
+      model.user.deleteLocal(id, password)
+        .then((doc) => {
+          if (!doc.n) {
+            res.status(401);
+            return res.send({ message: 'User cant be deleted (wrong password)' });
+          }
+          return res.send({ message: 'User was deleted' });
+        })
+        .catch((err) => {
+          err.status = 500;
+          return next(err);
+        });
+    },
+
+    updateUser: (req, res, next) => {
+      const id = req.user._id;
+      const userChanges = req.body;
+      const birthContructor = new Date(`${req.body.birthMonth}/${req.body.birthDay}/${req.body.birthYear}`);
+      delete userChanges.birthMonth;
+      delete userChanges.birthDay;
+      delete userChanges.birthYear;
+      userChanges.birth = birthContructor;
+      if (req.file) {
+        userChanges.customAvatar = req.file.filename;
       }
-    }
-  }
-  module.exports = user;
+      model.user.update(id, userChanges)
+        .then((doc) => {
+          return res.send({ message: 'Changes made successfully' });
+        })
+        .catch((err) => {
+          return res.send({ message: 'Error, try again later' });
+        });
+    },
 
-          // userModel.existUserLocal(newUser, function(err,data){
-          //   if (err){
-          //     throw err;
-          //   }
-          //   if(data){
-          //     if (data.displayName === newUser.username){
-          //       cmd.msg.push('Username already exist');
-          //       cmd.status = false;
-          //       cb(null, cmd);
-          //     }
-          //     else if (data.email === newUser.email){
-          //       cmd.msg.push('Email already exist');
-          //       cmd.status = false;
-          //       cb(null, cmd);
-          //     }
-          //   }else{
-          //     // En caso de que ambos sean unicos, guardamos el usuario completo (newUser) en la DB
-          //     userModel.createUserLocal  (newUser, function (err, storedUser){
-          //       cmd.msg.push('El usuario ha sido creado satisfactoriamente');
-        //         // Enviamos el mail de registro
-        //         email.sendRegister ({
-        //           registerConfirmation:registerConfirmation,
-        //           email:storedUser.email,
-        //           activationHash:storedUser.activationHash,
-        //           displayName:storedUser.displayName,
-        //           baseURL:params.baseURL,
-        //          }, function(data){
-        //         });
-        //         cb(null, cmd);//usuario creado
-        //       });
-        //     }
-        //   });
-        // }else {
-        //   // Si algun campo falla en la comprobacion , cmd.msg pasa a ser false e indica los errores
-        //   for (var i = cmd.msg.length - 1; i >= 0; i--) {
-        //     console.log (cmd.msg[i]);
-        //   }
-        //   cmd.msg.push('El usuario no ha podido ser creado, compruebe los requisitos');
-        //   cb(null, cmd);
-        // }
+    activateUser: (req, res, next) => {
+      const cmd = {
+        title: 'ACTIVATION COMPLETE',
+      };
+      const email = req.query.email;
+      const activationToken = req.query.activationToken; // TODO check expiration time for the link (72hrs)
+      model.user.activate(email, activationToken)
+        .then((doc) => {
+          return res.render('activation', { title: cmd.title, enable: doc.enable });
+        })
+        .catch((err) => {
+          err.status = 500;
+          return next(err);
+        });
+    },
 
-//
-//
-//
-// 		checkActivationCode : function (params, cb){
-// 			var cmd = {
-// 				title: 'Account activation',
-// 				msg: [],
-// 				status: true,
-// 			};
-// 			var activationHash;
-// 			var username;
-//
-// 			if(!('email' in params.bodyGet) || !('activationHash' in params.bodyGet)) {
-// 				cmd.msg.push('se produjo un error');
-// 				cmd.status=false;
-// 				cb(cmd);
-// 				return;
-// 			}else {
-// 				activationHash = validator.escape(params.bodyGet.activationHash.trim());
-// 				username = validator.escape(params.bodyGet.email.trim());
-// 			}
-//
-// 			userModel.existActivationHash (username, function (err, userData){
-//
-// 				console.log(userData);
-// 				if (err) {
-// 					throw err;
-// 				}
-// 				if (userData) {
-// 					// fijo diferencia horaria entre creacion y fecha actual (en horas)
-// 					var difTime = (new Date() - userData.creationDate)/1000/60/60;
-// 					// verificamos que ambos hashes sean iguales
-// 					if (userData.activationHash != activationHash){
-// 						cmd.msg.push('error al activar la cuenta, intentelo nuevamente');
-// 						cmd.status=false;
-// 					}
-// 					// Verificamos que ya no  halla sido activado anteriormente
-// 					if (userData.enable===true){
-// 						cmd.msg.push('usuario ya activado anteriormente');
-// 						//cmd.status=false;
-// 						cb(cmd);
-// 						return;
-// 					}
-// 					// Verificamos que el link no halla caducado
-// 					if (difTime>72) {
-// 						cmd.msg.push('el link ha caducado, registrese nuevamente');
-// 						cmd.status=false;
-// 						//borrar el usuario
-// 						cb(cmd);
-// 						return;
-// 					}
-// 					// si esta todo oks, llamar a la function activateUser
-// 					if (cmd.status) {
-// 						userModel.activateAccount(userData._id, function (err, data){
-// 							if (err){
-// 								throw err;
-// 							}
-// 							cmd.msg.push('usuario activado satisfactoriamente');
-// 							cb (cmd);
-// 							return;
-// 						});
-// 					}else {
-// 						cb(cmd);
-// 						return;
-// 					}
-// 				}else {
-// 					cmd.msg.push('usuario invalido, imposible activar');
-// 					cmd.status=false;
-// 					cb(cmd);
-// 				}
-// 			});
-// 		},
-//
-// 		forgot : function (param, cb){
-// 			var data = {
-// 				title: {title:'forgot'}
-// 			};
-// 			cb(data);
-// 		},
-//
-// 		login: function (param, cb) {
-// 			var cmd = {
-// 				'title':'login page',
-// 				'msg':[],
-// 				'status': true
-// 			};
-// 			cb(cmd);
-// 		},
-// 	};
-// }
+    resetPassword_get: (req, res, next) => {
+      const cmd = {
+        title: 'RESET PASSWORD',
+      };
+      return res.render('resetPassword', { title: cmd.title });
+    },
+
+    resetpassword_post: (req, res, next) => {
+      const resetPasswordToken = req.query.reset_password_token;
+      const email = req.query.email;
+      const password = req.body.password;
+      model.user.findOne({ resetPasswordToken })
+        .then((user) => {
+          if (!user) {
+            res.status(404);
+            return res.send({ message: 'Operation cant be completed' })
+          }
+          model.user.update(user._id, { password, resetPasswordToken: model.user.tokenGenerator() })
+            .then((user) => {
+              return res.send({ message: 'OK' });
+            });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+  };
+}
+
+module.exports = User;

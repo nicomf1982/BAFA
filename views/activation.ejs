@@ -1,0 +1,16 @@
+		<% include header.ejs %>
+		<div class="container">
+      <h1><%=title%></h1>
+      <p>Welcome</p>
+			<% if (!enable) {%>
+				<div class="alert alert-success text-center">
+					<p> <strong>Success!</strong> Your user it's now active, please Login<p/>
+				</div>
+			<%} else {%>
+				<div class="alert alert-warning text-center">
+					<p> <strong>Oops!</strong> Your user it's already active, please Login<p/>
+				</div>
+			<%}%>
+
+	  </div>
+	    <% include footer.ejs %>

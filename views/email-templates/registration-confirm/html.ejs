@@ -1,11 +1,11 @@
 Hi <strong><%=name.first%></strong>,<br><br>
 
-Welcome to proyectName!<br>
+Welcome to <%=proyectName%>!<br>
 
 <% if(registerConfirmation){ %>
 
 To activate your account, please follow this link:<br>
-<a href="<%=baseURL%>/activation/?email=<%=email%>&displayName=<%=name.first%>&activationHash=<%=activationHash%>"><%=baseURL%>/activation/?email=<%=email%>&displayName=<%=name.first%>&activationHash=<%=activationHash%></a>
+<a href="<%=baseURL%>/user/activation/?email=<%=email%>&displayName=<%=name.first%>&activationToken=<%=token%>">Complete registration</a>
 <br><br>
 <% } %>
 
@@ -16,4 +16,4 @@ Thanks for your registration.<br><br>
 
 Best regards,<br><br>
 
-proyectName Team.
+<%=proyectName%> Team.

@@ -1,0 +1,8 @@
+<!-- XOAuth2 lib check options -->
+check expiration date for the reset password link
+check catch responses and 500 error (mongo, server fail)
+<!-- find middleware to sanitize / formating all inputs comming from forms, (node-validator) -->
+<!-- set connect-redis to store session -->
+set ACL to control access
+<!-- redefine routes ex: /user/auth, /user/profile, /user/:username, /user (all users) -->
+express-brute

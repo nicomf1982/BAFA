@@ -8,14 +8,14 @@
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-					<a class="navbar-brand" href="/">Brand</a>
+					<a class="navbar-brand" href="/">HOME/LOGO</a>
 				</div>
 
 				<!-- Collect the nav links, forms, and other content for toggling -->
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 					<ul class="nav navbar-nav navbar-right">
 					<%if (loggedUser) {%>
-						<p class="navbar-text" id="displayUsername">Hello <a href="/profile"> <%=loggedUser.username%></a></p>
+						<p class="navbar-text" id="displayUsername">Hello <a href="/user/profile"> <%=loggedUser.username%></a></p>
 						<a href="/logout"><button id="logoutBtn" type="button" class="btn btn-default navbar-btn">Logout</button></a>
 						<%} else {%>
 						<a href="/register"><button id="registerBtn" type="button" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-user"></span>  Sign Up</button></a>

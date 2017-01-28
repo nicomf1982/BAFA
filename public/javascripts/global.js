@@ -1,57 +1,134 @@
-$(document).ready( function() {// Esta parte del código se ejecutará  cuando la página esté lista.
-
-  // prevengo el defaul de ahcer click en el boton de Login
+$(document).ready( function() {
 
   'use strict';
+
+  function loginAgain (){
+    $('#myModal').modal('show');
+  }
+
+  $(document).on('change', $('#upload-avatar'), function(input) {
+        if (input.target && input.target.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#avatar')
+                    .attr('src', e.target.result)
+                    .width(132)
+                    .height(132);
+            };
+            reader.readAsDataURL(input.target.files[0]);
+        }
+    });
+
 
   $('#loginBtn').click(function(){
     event.preventDefault();
     return;
   });
 
+  $('#remove-user').click(function(){
+    event.preventDefault();
+    return;
+  });
+
   $('[data-toggle="tooltip"]').tooltip();
 
-  // Metodo para el evento Modal desde Javascrip , boostrap los hace directamente usando los tags de button
-  // $('#loginBtn').click(function(){
-  //   $('#myModal').modal('show');
-  //   event.preventDefault();
-  //   return;
-  // });
+  $('#new-password-form').submit(function () {
+    var queryUrl = ($(location).attr('search'));
+    $.ajax({
+      type: 'POST',
+      url: '/user/resetPassword' + queryUrl,
+      dataType: 'json',
+      cache: false,
+      data: $(this).serialize(),
+    }).done(function (data) {
+        $('#ajax-panel').html('<div class="alert alert-success text-center"> <p> <strong>Success!</strong> ' + data.message || data.statusText || 'Operation Complete' + '<p/> </div>');
+      })
+      .fail(function (data) {
+        $('#ajax-panel').html('<div class="alert alert-danger text-center"> <p>' + data.message || data.statusText || 'Operation Complete' + '<p/> </div>');
+      })
+    event.preventDefault();
+  })
+
+  $('#forgot-form').submit(function () {
+    console.log($(this).serialize());
+    $.ajax({
+      type: 'POST',
+      url: '/forgot',
+      dataType: 'json',
+      cache: false,
+      data: $(this).serialize(),
+    }).done(function (data) {
+        $('#ajax-panel').html('<div class="alert alert-success text-center"> <p> <strong>Success!</strong> ' + data.message || data.statusText || 'Operation Complete' + '<p/> </div>');
+      })
+      .fail(function (data) {
+        $('#ajax-panel').html('<div class="alert alert-danger text-center"> <p>' + data.message || data.statusText || 'Operation Complete' + '<p/> </div>');
+      })
+    event.preventDefault();
+  })
+
+  $('#user-update').submit( function (){
+    $.ajax({
+      type: 'PUT',
+      url: '/user',
+      processData: false,
+      contentType: false,
+      dataType: 'json',
+      cache: false,
+      data: new FormData(this),
+    }).done(function (data) {
+      $('#ajax-panel').html('<div class="alert alert-success text-center"> <p> <strong>Success!</strong> ' + data.message || data.statusText || 'Operation Complete' + '<p/> </div>');
+      console.log('DONE',data);
+    }).fail(function (data){
+      $('#ajax-panel').html('<div class="alert alert-danger text-center"> <p>' + data.message || data.statusText || 'Operation Complete' + '<p/> </div>');
+      console.log(data.status);
+      if (data.status === 404 || data.status ===401) {
+        loginAgain()
+      }
+      console.log('FAIL', data);
+    })
+    event.preventDefault();
+  })
+
+
+  $('#remove-user-confirm').click(function () {
+    $.ajax({
+      type: 'DELETE',
+      url: '/user',
+      cache: false,
+      dataType: 'json',
+      data: $('#delete-user-form').serialize(),
+      beforeSend: function beforeSend() {
+        // this is where we append a loading image
+        $('#ajax-panel').html('<div class="img-responsive center-block loading"> <img src="/images/loading.gif" alt="Loading..." class="img-responsive center-block loading"/></div>');
+      },
+    })
+      .done(function (data) {
+        $('#ajax-panel').html('<div class="alert alert-success text-center"> <p> <strong>Success!</strong> ' + data.message || data.statusText || 'Operation Complete' + '<p/> </div>');
+        console.log(data);
+      })
+      .fail(function (data) {
+        $('#ajax-panel').html('<div class="alert alert-danger text-center"> <p>' + data.statusText || 'Internal Server Error' + '<p/> </div>');
+        console.log(data);
+      });
+      event.preventDefault();
+  });
 
   $('#signinButton').click (function(){
-    $.post('/login',$("#loginForm").serialize(), function (data){
-      console.log(data);
+    $.post('/user/auth',$("#loginForm").serialize(), function (data){
       if (data.success) {
-        console.log(data);
         $('#loginBad').hide();
         $('#loginOK').html(data.message).show().focus();
         setTimeout(function(){ window.location = data.redirect; }, 2000);
-      }else {
+      } else {
         $('#loginBad').html(data.message).show().focus();
+
         // console.log(data);
       }
     });
     event.preventDefault();
     return;
   });
-
-
-  // $('#signinButton').click (function(){
-  //   $.post('/login',$("#loginForm").serialize(), function (data){
-  //     console.log(data);
-  //     if (data.success) {
-  //       // console.log(data);
-  //       $('#loginBad').hide();
-  //       $('#loginOK').html('LOGGED').show().focus();
-  //       setTimeout(function(){ window.location = '/'; }, 2000);
-  //     }else {
-  //       $('#loginBad').html('BAD LOGGIN').show().focus();
-  //       // console.log(data);
-  //     }
-  //   });
-  //   event.preventDefault();
-  //   return;
-  // });
 
   $("#registerForm").validate({
       rules: {
@@ -85,7 +162,7 @@ $(document).ready( function() {// Esta parte del código se ejecutará  cuando l
       }
     },
     submitHandler: function(form) {
-      $.post('/register',$("#registerForm").serialize(), function (data){
+      $.post('/user',$("#registerForm").serialize(), function (data){
         if(data){
           console.log(data);
           if (data.message.length) {

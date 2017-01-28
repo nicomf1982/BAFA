@@ -1,15 +1,143 @@
 		<% include header.ejs %>
-    <div class="container">
-          <h1>PROFILE</h1>
-          <p>Welcome</p>
-          <div>
-          <%if (loggedUser) {%>
-          tu nombres es: <%=loggedUser.displayName%> </br>
-          tu email es: <%=loggedUser.email%> </br>
-          creaste el usuario el: <%=loggedUser.creationDate%>
-          <%}%>
+		<div class="container">
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-12 col-xs-offset-0 col-sm-offset-0 col-md-offset-3 col-lg-offset-0 toppad" >
+          <div class="panel panel-info">
+            <div class="panel-heading">
+              <h3 class="panel-title">@<%=loggedUser.username%></h3>
+            </div>
+						<span id="ajax-panel"></span>
+            <div class="panel-body">
+              <div class="row">
+								<form id="avatar-form" action="/" method="POST" enctype="multipart/form-data" novalidate>
+	                <div class="col-md-3 col-lg-3 " align="center"> <img id="avatar" alt="User Pic" src="<%=loggedUser.customAvatar ? "./avatar/"+loggedUser.customAvatar : loggedUser.defaultAvatar %>" class="img-rounded img-responsive">
+										<br>
+										<input  name="customAvatar" type="file" id="upload-avatar"form="user-update" style="display:none;" >
+										<button type="button" name="button" class="btn btn-default"><label for="upload-avatar">Upload avatar</label></button>
+										<!-- <input class="btn btn-default " name="avatar" type="text" value="Change Avatar" form="user-update"> -->
+									</div>
+								</form>
+                <div class=" col-md-9 col-lg-9 ">
+									<form id="user-update"  novalidate="" enctype="multipart/form-data">
+                  <table class="table table-user-information">
+                    <tbody>
+                      <tr>
+                        <td>First Name:</td>
+                        <td><input type="text" name="firstname" placeholder="John" value="<%=loggedUser.firstname%>"></td>
+                      </tr>
+                      <tr>
+                        <td>Last name:</td>
+                        <td><input type="text" name="lastname" placeholder="Doe" value="<%=loggedUser.lastname%>"></td>
+                      </tr>
+                      <tr>
+                        <td>Date of Birth</td>
+                        <td>
+													<select class="" name="birthDay">
+														<option value="null">Day</option>
+														<% for (let i=1; i<=31; i++){ %>
+															<% if (loggedUser.birth && i == loggedUser.birth.getUTCDate()){ %>
+																<option value="<%=i%>" selected=""><%=i%></option>
+															<% } else { %>
+															<option value="<%=i%>"><%=i%></option>
+															<%}%>
+														<%}%>
+													</select>
+													<select class="" name="birthMonth">
+														<option value="null">Month</option>
+														<% const _month =['', 'January', 'February','March', 'April','May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] %>
+														<% for (let m = 1; m<=12; m++) { %>
+															<% if (loggedUser.birth && m == loggedUser.birth.getUTCMonth()+1){ %>
+																<option value="<%=m%>" selected=""><%=_month[m]%></option>
+															<% } else { %>
+															<option value="<%=m%>"><%=_month[m]%></option>
+															<%}%>
+														<%}%>
+													</select>
+													<select class="" name="birthYear">
+														<option value="null">Year</option>
+														<% for (let y = (new Date).getUTCFullYear(); y >= 1920; y--) {%>
+															<% if (loggedUser.birth && y == loggedUser.birth.getFullYear()) { %>
+																<option value="<%=y%>" selected=""><%=y%></option>
+															<% } else { %>
+																<option value="<%=y%>"><%=y%></option>
+															<% } %>
+														<%}%>
+													</select>
+												</td>
+                      </tr>
+                        <td>Gender</td>
+                        <td>
+													<input type="radio" name="gender" <%=loggedUser.gender==1 ? 'checked' : ""%> value=1>  Male<br>
+													<input type="radio" name="gender" <%=loggedUser.gender==0 ? 'checked' : ""%> value=0>  Female<br>
+												</td>
+                      </tr>
+                        <tr>
+                        <td>Country</td>
+												<td>
+												<select class="" name="country">
+													<option value="ar">Argentina</option>
+													<option value="br">Brasil</option>
+													<option value="uy">Uruguay</option>
+												</select>
+												</td>
+                      </tr>
+                      <tr>
+                        <td>Email</td>
+                        <td><%=loggedUser.email%> (<a href="#">Change</a>)</td>
+                      </tr>
+                        <td>About you</td>
+                        <td>
+													<textarea name="about" rows="6" cols="30" form="user-update"><%=loggedUser.about || ""%>
+													</textarea>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+								<!-- </form> -->
+                  <!-- <a href="#" class="btn btn-success right">SAVE</a> -->
+                </div>
+              </div>
+            </div>
+                 <div class="panel-footer">
+                        <a data-original-title="Private Message" data-toggle="tooltip" type="button" class="btn btn-sm btn-primary"><i class="glyphicon glyphicon-envelope"></i> MP</a>
+                        <span class="pull-right">
+													<!-- <button type="submit" name="button"></button> -->
+                            <button type="submit" name="button" data-original-title="Edit this user" data-toggle="tooltip" class="btn btn-sm btn-warning"><i class="glyphicon glyphicon-edit"></i> SAVE MODIFICATION</button>
+                            <a id="remove-user"  type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#delete-user-modal"><i class="glyphicon glyphicon-remove"></i> DELETE USER</a>
+												</span>
+                    </div>
+							</form>
           </div>
-
-
+        </div>
       </div>
+    </div>
+	<!--Modal confirm password to delete  -->
+	<div class="modal fade" id="delete-user-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title text-center" id="myModalLabel">Delete user</h4>
+				</div>
+				<!-- <span id='ajax-panel'></span> -->
+
+				<div class="modal-body">
+					<form id="delete-user-form" class="form-signin" >
+						<h4>Please, confirm your password</h4>
+						<label for="inputPassword" class="sr-only">Password</label>
+						<input type="password" name="password" value="11111111" id="inputPassword" class="form-control" placeholder="Password" required>
+						<button id="remove-user-confirm" class="btn btn-lg btn-danger btn-block" type="submit">Delete my user NOW!</button>
+					</form>
+					</div>
+	<div id="loginOK" style="display:none;" class="alert alert-success text-center">
+	</div>
+	<div id="loginBad" style="display:none;" class="alert alert-danger text-center">
+	</div>
+				<div class="modal-footer">
+						<!-- <h4 class="text-center modal-footer-style">Don't have an account? <a href="/register"> Sign up » </a></h4> -->
+				</div>
+			</div>
+		</div>
+	</div>
     <% include footer.ejs %>

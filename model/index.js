@@ -1,10 +1,9 @@
 'use strict'
 
-function Model (main) {
+function Model(main) {
   return {
     user: require('./user')(main),
-  }
-
+  };
 }
 
 module.exports = Model;

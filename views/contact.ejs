@@ -1,11 +1,11 @@
 	<% include header.ejs %>
-		<div class="container">	
+		<div class="container">
 			<h1>Contact</h1>
 			<form id="contactForm" action="/contact" method="POST" novalidate>
-			<input type="text" placeholder='nombre'>
-			<input type="text" placeholder='email'>
-			<textarea type="text" placeholder='comentario' form="contacForm"> </textarea>
-			<input type="button" value="Enviar">
+			<input type="text" name="name" placeholder='nombre'>
+			<input type="text" name="email" placeholder='email'>
+			<textarea type="text" name="comment" placeholder='comentario' form="contactForm"> </textarea>
+			<input type="submit" value="Enviar">
 			</form>
 		</div>
 	<% include footer.ejs %>

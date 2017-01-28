@@ -1,11 +1,11 @@
 	<% include header.ejs %>
 		<div class="container">
 			<h1>Forgot</h1>
-			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-			tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-			quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-			consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-			cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-			proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+			<span id="ajax-panel"></span>
+			<p>Email account linked</p>
+			<form id="forgot-form" class="" action="/forgot" method="post">
+				<input type="text" name="email" value="info@playerchoice.net">
+				<button type="submit" name="">Send</button>
+			</form>
 		</div>
 	<% include footer.ejs %>

@@ -1,0 +1,20 @@
+		<% include header.ejs %>
+		<div class="container">
+	        <h1>TITTLE</h1>
+	        <p>Welcome</p>
+	        <div>
+	        la cantidad de usuarios registrados es de: <%=users.length%><br>
+					<table>
+						<tr>
+							<td><p>Username</p></td>
+							<td><p>Email</p></td>
+						</tr>
+						<% users.forEach((user) => { %>
+							<tr><td><%=user.username%></td><td><%=user.email%></td></tr>
+						<% }) %>
+					</table>
+	        </div>
+
+
+	    </div>
+	    <% include footer.ejs %>

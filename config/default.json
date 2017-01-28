@@ -7,22 +7,56 @@
 			"posts"
 		]
 	},
+	"redis": {
+		"host": "localhost",
+		"port":6379
+	},
+	"server":{
+		"protocol": "http://",
+		"domain":"",
+		"port":3000
+	},
+	"service": {
+		"protocol": "http://",
+		"host": "localhost:3000",
+		"pathname": "/service"
+	},
 	"crypto":{
 		"key": "USE.YOUR.OWN"
 	},
 	"session":{
 		"secret": "keyboard cat",
-    "resave": true,
-	  "saveUninitialized": true,
+    "resave": false,
+	  "saveUninitialized": false,
   	"cookie": {
-    	"maxAge":36000000
+    	"maxAge":36000000 //
 		}
+	},
+	"emailDefault": {
+		"from": "MVP <mvp@example.com>",
+		"replyTo": "MVP <mvp@example.com>",
+		"proyectName": "MVP",
+		"contactEmail": "MVP <mvp@example.com>"
 	},
 	"options":{
 		"REGISTER_CONFIRMATION": false,
 		"EMAIL_DIRECT": true,
 		"EMAIL_SMTP": false
+	},
+	"xoauthOptions": {
+		"user": "", // Use and Gmail account
+		"clientId": "", // Gmail ClientId
+		"clientSecret": "", // Gmail clientSecret
+		"refreshToken": "", // Gmail refresh Token
+		"accessToken": "",
+		"customHeaders": {
+			"HeaderName": "HeaderValue"
+		},
+		"customPayload": {
+			"payloadParamName": "payloadValue"
+		}
 	}
 }
 
 /*1000*60*60*24*7*/
+/*36000000*/

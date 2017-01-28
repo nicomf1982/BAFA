@@ -1,13 +1,14 @@
 		<% include header.ejs %>
 		<div class="container">
-	        <h1>NICO1982</h1>
-	        <p>Welcome</p>
+	        <h1>⚡️ TITTLE ⚡️</h1>
 	        <div>
-	        <%if (loggedUser) {%>
-	        tu nombres es: <%=loggedUser.displayName%> </br>
-	        tu email es: <%=loggedUser.email%> </br>
-	        creaste el usuario el: <%=loggedUser.creationDate%>
-	        <%}%>
+		        <%if (loggedUser) {%>
+		        <p>Firstname: <b><%=loggedUser.firstname%></b> </p>
+		        <p>Lastname: <b><%=loggedUser.lastname%> </b> </p>
+		        <p>Email: <b><%=loggedUser.email%> </b> </p>
+		        <p>Account creation data: <b><%=loggedUser.creationDate%></b> </p>
+		        <%}%>
+						<p id="h" class="text-center">🍔</p>
 	        </div>
 
 
